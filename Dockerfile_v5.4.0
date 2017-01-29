@@ -1,7 +1,11 @@
 
 # Install anaconda Python stack and some other useful tools
 FROM continuumio/anaconda
-RUN apt-get install -y tar git curl nano wget dialog net-tools build-essential
+RUN apt-get update
+RUN apt-get install -y tar git curl wget dialog net-tools build-essential
+
+# Install editors:
+RUN apt-get install -y vim nano
 
 # Install gfortran
 RUN apt-get install -y gfortran
@@ -17,4 +21,7 @@ RUN echo 'export FC=gfortran' >> ~/.bashrc
 # (You can change `master` to a commit hash for a different version)
 RUN curl -sL https://github.com/clawpack/apps/archive/master.tar.gz | tar xz
 RUN mv apps-master /clawpack-v5.4.0/apps
+
+# Additional Python packages
+RUN pip install plotly
 
