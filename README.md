@@ -13,5 +13,5 @@ To push to [https://hub.docker.com/u/clawpack/dashboard/](dockerhub):
 
 ## To use an image:
 
-See [the documentation](http://www.clawwpack.org/docker_image.html).
+See [the documentation](http://www.clawpack.org/docker_image.html).
 
