@@ -19,7 +19,7 @@ RUN echo 'export FC=gfortran' >> ~/.bashrc
 
 # Download the master branch of the apps repository and rename:
 # (You can change `master` to a commit hash for a different version)
-RUN curl -sL https://github.com/clawpack/apps/archive/bd2e671f0d46.tar.gz | tar xz
+RUN curl -sL https://github.com/clawpack/apps/archive/128e289c43b.tar.gz | tar xz
 RUN mv apps-* /clawpack-v5.4.1/apps
 
 # Additional Python packages
