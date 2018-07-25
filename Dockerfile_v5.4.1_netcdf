@@ -1,0 +1,81 @@
+# Install anaconda Python stack and some other useful tools
+FROM continuumio/anaconda
+RUN apt-get update
+RUN apt-get install -y tar git curl wget dialog net-tools build-essential libcurl4-openssl-dev m4 liblapack-dev
+
+# Install editors:
+RUN apt-get install -y vim nano
+
+# Install gfortran
+RUN apt-get install -y gfortran
+ENV CC=gcc
+ENV FC=gfortran
+
+## update conda and pip
+RUN conda update --yes conda
+RUN pip install --upgrade pip
+
+## set library location
+ENV PREFIXDIR=/usr/local
+
+## get zlib
+RUN wget https://zlib.net/zlib-1.2.11.tar.gz && tar -xvzf zlib-1.2.11.tar.gz
+RUN cd zlib-1.2.11; \
+    ./configure --prefix=${PREFIXDIR}; \
+    make check; \
+    make install; \
+    rm -rf /zlib-1.2.11.tar.gz /zlib-1.2.11
+
+
+## get hdf5-1.8
+RUN wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.21/src/hdf5-1.8.21.tar.gz && tar -xvzf hdf5-1.8.21.tar.gz
+RUN cd hdf5-1.8.20; \
+    ./configure --with-zlib=${PREFIXDIR} --prefix=${PREFIXDIR} --enable-hl; \
+    make check; \
+    make install; \
+    rm -rf /hdf5-1.8.21.tar.gz /hdf5-1.8.21
+    
+
+## get hdf5-1.10
+RUN wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.2/src/hdf5-1.10.2.tar.gz && tar -xvzf hdf5-1.10.2.tar.gz
+RUN cd hdf5-1.10.2; \
+    ./configure --with-zlib=${PREFIXDIR} --prefix=${PREFIXDIR} --enable-hl --enable-shared; \
+    make check; \
+    make install; \
+    rm -rf /hdf5-1.10.2.tar.gz /hdf5-1.10.2
+
+
+## get netcdf-c
+RUN wget https://github.com/Unidata/netcdf-c/archive/v4.6.1.tar.gz && tar -xvzf v4.6.1.tar.gz
+ENV LD_LIBRARY_PATH=${PREFIXDIR}/lib
+RUN cd netcdf-c-4.6.1; \
+    CPPFLAGS=-I${PREFIXDIR}/include LDFLAGS=-L${PREFIXDIR}/lib ./configure --prefix=${PREFIXDIR} --enable-netcdf-4 --enable-shared --enable-dap; \
+    make check; \
+    make install; \
+    rm -rf /v4.6.1.tar.gz /netcdf-c-4.6.1
+    
+    
+## get netcdf-fortran
+RUN wget https://github.com/Unidata/netcdf-fortran/archive/v4.4.4.tar.gz && tar -xvzf v4.4.4.tar.gz
+RUN cd netcdf-fortran-4.4.4; \
+    CPPFLAGS=-I${PREFIXDIR}/include LDFLAGS=-L${PREFIXDIR}/lib ./configure --prefix=${PREFIXDIR}; \
+    make check; \
+    make install; \
+    rm -rf /v4.4.4.tar.gz /netcdf-fortran-4.4.4
+    
+    
+# Install clawpack-v5.4.1:
+RUN pip install --src=/ --user -e git+https://github.com/clawpack/clawpack.git@v5.4.1#egg=clawpack-v5.4.1
+
+# Set environment variables:
+RUN echo 'export CLAW=/clawpack-v5.4.1' >> ~/.bashrc
+RUN echo 'export FC=gfortran' >> ~/.bashrc
+
+# Download the master branch of the apps repository and rename:
+# (You can change `master` to a commit hash for a different version)
+RUN curl -sL https://github.com/clawpack/apps/archive/128e289c43b.tar.gz | tar xz
+RUN mv apps-* /clawpack-v5.4.1/apps
+
+# Additional Python packages
+RUN conda install --yes matplotlib
+RUN pip install plotly netCDF4
