@@ -7,12 +7,12 @@ USER root
 
 # Install additional packages useful with GeoClaw (not all are st
 RUN conda install -c conda-forge \
-  xarray
-  netcdf4
-  netcdf4-fortran
-  cartopy
-  ffmpeg
-  pyproj
+  xarray \
+  netcdf4 \
+  netcdf4-fortran \
+  cartopy \
+  ffmpeg \
+  pyproj \
   rasterio
 
 # Start container as this user
