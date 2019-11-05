@@ -2,8 +2,7 @@
 # in Dockerfile_v5.6.1:
 FROM clawpack/v5.6.1_dockerimage:release
 
-# need to be root to install new packages
-USER root
+USER jovyan
 
 # Install additional packages useful with GeoClaw (not all are st
 RUN conda install -c conda-forge \
@@ -14,6 +13,3 @@ RUN conda install -c conda-forge \
   ffmpeg \
   pyproj \
   rasterio
-
-# Start container as this user
-USER jovyan
