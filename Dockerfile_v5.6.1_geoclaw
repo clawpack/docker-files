@@ -8,7 +8,7 @@ USER jovyan
 RUN conda install -c conda-forge \
   xarray \
   netcdf4 \
-  netcdf4-fortran \
+  netcdf-fortran \
   cartopy \
   ffmpeg \
   pyproj \
