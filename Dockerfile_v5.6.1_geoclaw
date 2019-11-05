@@ -1,0 +1,18 @@
+# Start from the clawpack v5.6.1 image that includes everything already done
+# in Dockerfile_v5.6.1:
+FROM clawpack/v5.6.1_dockerimage:release
+
+# need to be root to install new packages
+USER root
+
+# Install additional packages useful with GeoClaw (not all are st
+RUN conda install -c conda-forge xarray
+RUN conda install -c conda-forge netcdf4
+RUN conda install -c conda-forge cartopy
+RUN conda install -c conda-forge ffmpeg
+RUN conda install -c conda-forge pyproj
+RUN conda install -c conda-forge rasterio
+
+# Start container as this user
+USER jovyan
+    
