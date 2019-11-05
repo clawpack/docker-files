@@ -6,13 +6,14 @@ FROM clawpack/v5.6.1_dockerimage:release
 USER root
 
 # Install additional packages useful with GeoClaw (not all are st
-RUN conda install -c conda-forge xarray
-RUN conda install -c conda-forge netcdf4
-RUN conda install -c conda-forge cartopy
-RUN conda install -c conda-forge ffmpeg
-RUN conda install -c conda-forge pyproj
-RUN conda install -c conda-forge rasterio
+RUN conda install -c conda-forge \
+  xarray
+  netcdf4
+  netcdf4-fortran
+  cartopy
+  ffmpeg
+  pyproj
+  rasterio
 
 # Start container as this user
 USER jovyan
-    
