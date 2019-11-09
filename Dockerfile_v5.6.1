@@ -1,36 +1,33 @@
-
 # Install anaconda Python stack and some other useful tools
-FROM continuumio/anaconda
-RUN apt-get update
-RUN apt-get install -y tar git curl wget dialog net-tools build-essential
+FROM jupyter/base-notebook
 
-# Install editors:
-RUN apt-get install -y vim nano
+USER root
+RUN apt-get update && \
+  apt-get install -y dialog net-tools build-essential
+USER jovyan
 
-# Install gfortran
-RUN apt-get install -y gfortran
+# Install gfortran and editors
+RUN conda install -y -c conda-forge \
+  scipy \
+  compilers \
+  lapack \
+  vim \
+  nano \
+  git \
+  tar \
+  curl \
+  nose
 
-
-# Set up user jovyan so this image can be used e.g. on mybinder.org
-ENV NB_USER jovyan
-ENV NB_UID 1000
-ENV HOME /home/${NB_USER}
-
-RUN adduser --disabled-password \
-    --gecos "Default user" \
-    --uid ${NB_UID} \
-    ${NB_USER}
-
-USER ${NB_USER}
+# set env variables
+ENV CLAW ${HOME}/clawpack-v5.6.1
+ENV NETCDF4_DIR /opt/conda
+ENV FC gfortran
+# this is needed to find libraries when building geoclaw (particularly lapack)
+ENV LIB_PATHS /opt/conda/lib
 
 # Install clawpack-v5.6.1:
 RUN pip install --src=/${HOME}/ --user -e git+https://github.com/clawpack/clawpack.git@v5.6.1#egg=clawpack-v5.6.1
 
-ENV CLAW ${HOME}/clawpack-v5.6.1
-
-# Put environment variables commands into .bashrc:
-RUN echo 'export CLAW=${CLAW}' >> ~/.bashrc
-RUN echo 'export FC=gfortran' >> ~/.bashrc
 # set prompt:
 RUN echo 'export PS1="jovyan $ "' >> ~/.bashrc
 
@@ -41,4 +38,4 @@ RUN curl -sL https://github.com/clawpack/apps/archive/master.tar.gz | tar xz
 RUN mv apps-* apps
 
 WORKDIR ${HOME}
-
+CMD [ "/bin/bash" ]
