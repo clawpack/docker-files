@@ -3,12 +3,14 @@
 
 To build an image give a command like this in this directory:
 
-    $ docker build -t clawpack/v5.4.1_dockerimage -f Dockerfile_v5.4.1 .
+    $ docker build -t clawpack/v5.6.1_dockerimage -f Dockerfile_v5.6.1 .
 
 To push to [https://hub.docker.com/u/clawpack/dashboard/](dockerhub):
 
     $ docker login
-    $ docker push clawpack/v5.4.1_dockerimage
+    $ docker push clawpack/v5.6.1_dockerimage
+    $ docker tag clawpack/v5.6.1_dockerimage:latest \
+                 clawpack/v5.6.1_dockerimage:release
 
 (Requires an account with with push permission.)
 

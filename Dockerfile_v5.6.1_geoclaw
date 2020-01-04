@@ -1,0 +1,16 @@
+# Start from the clawpack v5.6.1 image that includes everything already done
+# in Dockerfile_v5.6.1:
+FROM clawpack/v5.6.1_dockerimage:release
+
+USER jovyan
+
+# Install additional packages useful with GeoClaw
+# netCDF is required for some tests
+RUN conda install -c conda-forge \
+  xarray \
+  netcdf4 \
+  netcdf-fortran \
+  cartopy \
+  ffmpeg \
+  pyproj \
+  rasterio

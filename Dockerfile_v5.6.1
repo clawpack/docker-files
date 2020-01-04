@@ -1,0 +1,41 @@
+# Install anaconda Python stack and some other useful tools
+FROM jupyter/base-notebook
+
+USER root
+RUN apt-get update && \
+  apt-get install -y dialog net-tools build-essential
+USER jovyan
+
+# Install gfortran and editors
+RUN conda install -y -c conda-forge \
+  scipy \
+  compilers \
+  lapack \
+  vim \
+  nano \
+  git \
+  tar \
+  curl \
+  nose
+
+# set env variables
+ENV CLAW ${HOME}/clawpack-v5.6.1
+ENV NETCDF4_DIR /opt/conda
+ENV FC gfortran
+# this is needed to find libraries when building geoclaw (particularly lapack)
+ENV LIB_PATHS /opt/conda/lib
+
+# Install clawpack-v5.6.1:
+RUN pip install --src=/${HOME}/ --user -e git+https://github.com/clawpack/clawpack.git@v5.6.1#egg=clawpack-v5.6.1
+
+# set prompt:
+RUN echo 'export PS1="jovyan $ "' >> ~/.bashrc
+
+WORKDIR ${CLAW}
+# Download the master branch of the apps repository and rename:
+# (You can change `master` to a commit hash for a different version)
+RUN curl -sL https://github.com/clawpack/apps/archive/master.tar.gz | tar xz
+RUN mv apps-* apps
+
+WORKDIR ${HOME}
+CMD [ "/bin/bash" ]
