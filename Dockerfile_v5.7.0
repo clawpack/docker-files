@@ -17,7 +17,8 @@ RUN conda install -y -c conda-forge \
   git \
   tar \
   curl \
-  nose
+  nose \
+  vtk
 
 # set env variables
 ENV CLAW ${HOME}/clawpack-v5.7.0
