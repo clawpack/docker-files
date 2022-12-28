@@ -1,0 +1,76 @@
+# Install anaconda Python stack and some other useful tools
+FROM jupyter/base-notebook
+
+USER root
+RUN apt-get update && \
+  apt-get install -y dialog net-tools build-essential
+USER jovyan
+
+
+# Install various things
+RUN conda install -y -c conda-forge \
+  scipy \
+  compilers \
+  lapack \
+  vim \
+  nano \
+  git \
+  tar \
+  curl \
+  nose \
+  xarray \
+  ffmpeg
+
+# Install additional packages useful with GeoClaw:
+
+RUN conda install -c conda-forge \
+  netcdf4 \
+  netcdf-fortran \
+  cartopy \
+  pyproj \
+  rasterio
+
+# set env variables
+ENV CLAW ${HOME}/clawpack-v5-9-0
+ENV NETCDF4_DIR /opt/conda
+ENV FC gfortran
+# this is needed to find libraries when building geoclaw (particularly lapack)
+ENV LIB_PATHS /opt/conda/lib
+
+# Install clawpack-v5.9.0 (into $HOME/clawpack-v5-9-0):
+RUN pip install --src=/${HOME}/ --user -e \
+    git+https://github.com/clawpack/clawpack.git@v5.9.0#egg=clawpack-v5.9.0 \
+    --use-deprecated=legacy-resolver
+
+# set prompt:
+RUN echo 'export PS1="jovyan $ "' >> ~/.bashrc
+
+WORKDIR ${CLAW}
+# Clone the apps repository (with master checked out):
+RUN git clone https://github.com/clawpack/apps.git 
+
+WORKDIR ${HOME}
+
+# fix a few things for git:
+RUN git config --file .gitconfig core.pager more
+RUN git config --file .gitconfig core.editor vim
+
+# Add packages needed for the book http://www.clawpack.org/riemann_book/
+
+RUN git clone https://github.com/ipython-contrib/jupyter_contrib_nbextensions.git
+RUN pip install ipywidgets
+RUN pip install --user -e jupyter_contrib_nbextensions
+
+ENV PATH ${PATH}:/home/jovyan/.local/bin
+RUN pip install "traitlets>=5.0" "nbformat>=5.0" "jupyter-core>=4.6.0" "jupyter-client>=6.1.5"
+RUN jupyter contrib nbextension install --user
+RUN jupyter nbextension enable widgetsnbextension --py
+RUN jupyter nbextension enable equation-numbering/main
+
+
+# Add book's files
+RUN git clone --depth=1 https://github.com/clawpack/riemann_book
+RUN pip install --user --no-cache-dir -r $HOME/riemann_book/requirements.txt
+
+
+CMD [ "/bin/bash" ]
